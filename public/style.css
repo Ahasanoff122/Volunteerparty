@@ -91,8 +91,7 @@ body {
   background: url('WhatsApp\ Image\ 2025-10-14\ at\ 09.49.40.jpeg') no-repeat center center fixed;
   background-size: cover;
   color: #e0e7ff; /* açıq bənövşəyi-ağ yazı */
-  opacity: 0;
-  animation: pageFadeIn 1s ease forwards;
+  
 }
 
 /* Overlay — disco ab-havasına uyğun gradient */
@@ -116,10 +115,7 @@ body::before {
   backdrop-filter: blur(10px);
   color: #f5f3ff;
 }
-@keyframes pageFadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+
 
 .btn.primary {
   background: var(--accent);
