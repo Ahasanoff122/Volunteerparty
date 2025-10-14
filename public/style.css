@@ -549,4 +549,32 @@ textarea {
     width: 100%;
   }
 }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 sütun */
+  gap: 8px;
+  width: 100%;
+  max-width: 800px; /* istəyə görə məhdudlaşdırma */
+  margin: 0 auto;
+}
+
+.gallery-item {
+  width: 100%;
+  aspect-ratio: 1/1; /* hər şəkil kvadrat */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* şəkil div-ə tam yerləşir, kənara çıxmır */
+  display: block;
+}
+/* @media (min-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr); 
+  }
+} */
+
 
