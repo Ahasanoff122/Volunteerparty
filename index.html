@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VOLUNTEER PARTY</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="logo" href="#">VOLUNTEER  <span>PARTY</span></a>
+      <nav class="nav">
+        <a href="#program">Proqram</a>
+        <a href="#rsvp">Qeydiyyat</a>
+        <a href="#gallery">Qalereya</a>
+        
+      </nav>
+      <button id="menuBtn" class="menu-btn">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+   <section class="hero">
+  <div class="hero-content">
+    <div class="hero-disco">
+      <div class="disco-ball"></div>
+    </div>
+    <h1 class="hero-title party-glow">VOLUNTEER PARTY 2025 🎉</h1>
+    <p class="hero-subtitle">
+      Gəlin birlikdə qeyd edək — icma, əyləncə və təşəbbüslər. 
+      Musiqi, oyunlar və xüsusi mükafatlar sizi gözləyir!
+    </p>
+    <div class="hero-buttons">
+      <a href="#rsvp" class="btn primary">İndi qeydiyyatdan keç</a>
+      <a href="#program" class="btn ghost">Proqramı gör</a>
+    </div>
+    <ul class="hero-meta">
+      <li>📅 25 Oktyabr 2025</li>
+      <li>📍 Bakı, Milli Park</li>
+    </ul>
+  </div>
+</section>
+
+
+    <!-- Program -->
+    <section id="program" class="section container">
+      <h2 style="text-align: center;">Tədbir Proqramı</h2>
+      <div class="program-grid">
+        <div class="program-item">
+          <time>10:00</time>
+          <h3>Açılış & Qəbul</h3>
+          <p>Qonaqların qarşılanması və registrasiya.</p>
+        </div>
+        <div class="program-item">
+          <time>11:00</time>
+          <h3>Panel: Könüllülük və Sosial Təsir</h3>
+          <p>Ən yaxşı təcrübələr və uğur hekayələri.</p>
+        </div>
+        <div class="program-item">
+          <time>14:00</time>
+          <h3>Workshop-lar</h3>
+          <p>Praktik sessiyalar və master-klasslar.</p>
+        </div>
+        <div class="program-item">
+          <time>18:00</time>
+          <h3>Party & Mükafatlandırma</h3>
+          <p>Müsabiqələr, musiqi və mükafatlandırma.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section id="rsvp" class="section rsvp-section container" style="padding-right: 5px;">
+      <h2 style="text-align: center;">RSVP — Qatılmaq istəyirəm</h2>
+      <p style="text-align: center;">Gələcəyinizi təsdiq edin — yerlər məhduddur.</p>
+      <form id="rsvpForm" class="form">
+        <div class="form-row">
+          <input type="text" id="name" placeholder="Ad, Soyad, K qrupu" required />
+          <input type="email" id="email" placeholder="Email" required />
+        </div>
+        <div class="form-row">
+          <input type="tel" id="phone" placeholder="Telefon (isteğe bağlı)" />
+          <select id="attendance">
+            <option value="Yes">Gəlirəm</option>
+            <option value="Maybe">Bəlkə</option>
+            <option value="No">Gələ bilmərəm</option>
+          </select>
+        </div>
+        <textarea id="note" placeholder="Qeydlər (isteğe bağlı)"></textarea>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Qeydiyyatı göndər</button>
+        </div>
+        <p id="rsvpMsg" class="small muted"></p>
+      </form>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="section gallery-section">
+
+      <h2 >Qalereya</h2>
+      <p>Keçən illərdən fotolar (nümunə)</p>
+      <div class="gallery-grid">
+        <div class="gallery-item">Foto 1</div>
+        <div class="gallery-item">Foto 2</div>
+        <div class="gallery-item">Foto 3</div>
+        <div class="gallery-item">Foto 4</div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section container contact-section">
+     
+      
+        
+        <div class="map">
+          <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%;">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1069.5684188909063!2d46.367561619060254!3d40.691673580272415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x403f516615151ec9%3A0xfea68ef4bbe09f0!2zR8mZbmPJmSBBU0FOIHhpZG3JmXQ!5e0!3m2!1sen!2saz!4v1760421865860!5m2!1sen!2saz" 
+    style="border:0; position:absolute; top:0; left:0; width:100%; height:100%;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+
+        
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© VOLUNTEER PARTY — <small>Bütün hüquqlar qorunur</small></p>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+</body>
+</html>

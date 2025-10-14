@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <h1>RSVP Siyahısı</h1>
+
+  <label>Ad filtri: <input type="text" id="filterName"></label>
+  <label>Gələcək / Gəlməyəcək: 
+    <select id="filterAttendance">
+      <option value="">Hamısı</option>
+      <option value="Yes">Gələcək</option>
+      <option value="No">Gəlməyəcək</option>
+    </select>
+  </label>
+  <button id="applyFilter">Filtrlə</button>
+
+  <table border="1" id="rsvpTable">
+    <thead>
+      <tr>
+        <th>Ad</th>
+        <th>Email</th>
+        <th>Telefon</th>
+        <th>İştirak statusu</th>
+        <th>Qeyd</th>
+        <th>Tarix</th>
+      </tr>
+    </thead>
+    <tbody>
+       <!-- <% if (rsvps.length === 0) { %>
+    <tr>
+      <td colspan="6">Heç bir qeyd yoxdur.</td>
+    </tr>
+  <% } else { %>
+    <% rsvps.forEach(rsvp => { %>
+      <tr>
+        <td><%= rsvp.name %></td>
+        <td><%= rsvp.email %></td>
+        <td><%= rsvp.phone || '-' %></td>
+        <td><%= rsvp.attendance %></td>
+        <td><%= rsvp.note || '-' %></td>
+        <td><%= new Date(rsvp.createdAt).toLocaleString() %></td>
+      </tr>
+    <% }) %>
+  <% } %> -->
+    </tbody>
+  </table>
+
+  <script src="/admin.js" defer></script>
+ <a href="login" style="position:absolute; top:20px; right:20px;">Çıxış</a>
+
+</body>
+</html>
