@@ -45,6 +45,7 @@
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 13px;
+      margin-right: 5px;
     }
     .invite-btn:hover {
       background: #219150;
@@ -69,22 +70,35 @@
       padding: 8px 14px;
       border-radius: 8px;
     }
+    label {
+      margin-right: 10px;
+    }
+    #applyFilter {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #2980b9;
+      color: #fff;
+      cursor: pointer;
+    }
+    #applyFilter:hover {
+      background: #2471a3;
+    }
   </style>
 </head>
 <body>
   <h1>RSVP Siyahısı</h1>
 
-<label>Ad filtri: <input type="text" id="filterName" placeholder="Ad üzrə axtar..."></label>
-<label>İştirak statusu:
-  <select id="filterAttendance">
-    <option value="">Hamısı</option>
-    <option value="Yes">Gələcək</option>
-    <option value="No">Gəlməyəcək</option>
-    <option value="Maybe">Bəlkə</option>
-  </select>
-</label>
-<button id="applyFilter">Filtrlə</button>
-
+  <label>Ad filtri: <input type="text" id="filterName" placeholder="Ad üzrə axtar..."></label>
+  <label>İştirak statusu:
+    <select id="filterAttendance">
+      <option value="">Hamısı</option>
+      <option value="Yes">Gələcək</option>
+      <option value="No">Gəlməyəcək</option>
+      <option value="Maybe">Bəlkə</option>
+    </select>
+  </label>
+  <button id="applyFilter">Filtrlə</button>
 
   <table id="rsvpTable">
     <thead>
@@ -99,47 +113,127 @@
       </tr>
     </thead>
     <tbody>
-      <% if (rsvps.length === 0) { %>
-        <tr><td colspan="7">Heç bir qeyd yoxdur.</td></tr>
-      <% } else { %>
-        <% rsvps.forEach(rsvp => { %>
-          <tr>
-            <td><%= rsvp.name %></td>
-            <td><%= rsvp.email %></td>
-            <td><%= rsvp.phone || '-' %></td>
-            <td><%= rsvp.attendance %></td>
-            <td><%= rsvp.note || '-' %></td>
-            <td><%= new Date(rsvp.createdAt).toLocaleString() %></td>
-            <td>
-              <button class="invite-btn" onclick="sendInvite('<%= rsvp._id %>', '<%= rsvp.email %>', '<%= rsvp.name %>')">📨 Dəvət göndər</button>
-              <button class="delete-btn" onclick="deleteRsvp('<%= rsvp._id %>')">🗑 Sil</button>
-            </td>
-          </tr>
-        <% }) %>
-      <% } %>
+      <!-- Dinamik cədvəl JS ilə doldurulacaq -->
     </tbody>
   </table>
 
   <a href="/logout" id="logout">Çıxış</a>
 
   <script>
-    // Tək bir şəxsə dəvət göndər
-    async function sendInvite(id, email, name) {
-      if (!confirm(`${name} (${email}) üçün dəvət göndərilsin?`)) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      const tableBody = document.querySelector('#rsvpTable tbody');
+      const filterName = document.getElementById('filterName');
+      const filterAttendance = document.getElementById('filterAttendance');
+      const applyBtn = document.getElementById('applyFilter');
 
-      const res = await fetch(`/api/send-invite/${id}`, { method: "POST" });
-      const data = await res.json();
-      alert(data.message || "Email göndərildi!");
-    }
+      let rsvpList = [];
 
-    // RSVP sil
-    async function deleteRsvp(id) {
-      if (!confirm("Bu qeyd silinsin?")) return;
-      const res = await fetch(`/api/rsvp/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      alert(data.message);
-      location.reload();
-    }
+      // Serverdən RSVP-ləri gətir
+      async function fetchRSVP() {
+        try {
+          const res = await fetch('/api/rsvp');
+          rsvpList = await res.json();
+          renderTable(rsvpList);
+        } catch(err) {
+          console.error(err);
+          tableBody.innerHTML = '<tr><td colspan="7">Məlumatları gətirmək mümkün olmadı.</td></tr>';
+        }
+      }
+
+      // Cədvəli göstər
+      function renderTable(list) {
+        tableBody.innerHTML = '';
+        if (list.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="7">Heç bir qeyd yoxdur.</td></tr>';
+          return;
+        }
+
+        list.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name || '-'}</td>
+            <td>${item.email || '-'}</td>
+            <td>${item.phone || '-'}</td>
+            <td>${formatAttendance(item.attendance)}</td>
+            <td>${item.note || '-'}</td>
+            <td>${new Date(item.createdAt).toLocaleString()}</td>
+            <td>
+              <button class="invite-btn" onclick="sendInvite('${item._id}', '${item.email}', '${item.name}')">📨 Dəvət göndər</button>
+              <button class="delete-btn" onclick="deleteRsvp('${item._id}')">🗑 Sil</button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      }
+
+      // Attendance tərcüməsi
+      function formatAttendance(value) {
+        if (!value) return '-';
+        if (value === 'Yes') return 'Gələcək';
+        if (value === 'No') return 'Gəlməyəcək';
+        if (value === 'Maybe') return 'Bəlkə';
+        return value;
+      }
+
+      // Filter funksiyası
+      function applyFilters() {
+        let filtered = [...rsvpList];
+        const nameVal = (filterName.value || '').trim().toLowerCase();
+        const attendanceVal = filterAttendance.value;
+
+        if (nameVal) {
+          filtered = filtered.filter(r => (r.name || '').toLowerCase().includes(nameVal));
+        }
+
+        if (attendanceVal) {
+          filtered = filtered.filter(r => {
+            if (attendanceVal === 'Yes') return r.attendance === 'Yes' || r.attendance === 'Maybe';
+            return r.attendance === attendanceVal;
+          });
+        }
+
+        renderTable(filtered);
+      }
+
+      applyBtn.addEventListener('click', applyFilters);
+      filterName.addEventListener('input', applyFilters);
+      filterAttendance.addEventListener('change', applyFilters);
+
+      // Tək bir istifadəçiyə dəvət göndər
+      window.sendInvite = async function(id, email, name) {
+        if (!confirm(`${name} (${email}) üçün dəvət göndərilsin?`)) return;
+
+        try {
+          const res = await fetch(`/api/send-single-invite`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          const data = await res.json();
+          alert(data.message || 'Email göndərildi!');
+        } catch(err) {
+          console.error(err);
+          alert('Dəvət göndərilərkən xəta baş verdi.');
+        }
+      }
+
+      // RSVP sil
+      window.deleteRsvp = async function(id) {
+        if (!confirm("Bu qeyd silinsin?")) return;
+        try {
+          const res = await fetch(`/api/rsvp/${id}`, { method: 'DELETE' });
+          const data = await res.json();
+          alert(data.message);
+          fetchRSVP();
+        } catch(err) {
+          console.error(err);
+          alert('Silinərkən xəta baş verdi.');
+        }
+      }
+
+      // Başlanğıcda məlumatları gətir
+      fetchRSVP();
+    });
   </script>
 </body>
 </html>

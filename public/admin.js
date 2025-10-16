@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyFilters() {
     let filtered = [...rsvpList];
     const nameVal = (filterName.value || '').trim().toLowerCase();
-    const attendanceVal = (filterAttendance.value || '').toLowerCase();
+    const attendanceVal = (filterAttendance.value || '').trim();
 
     // Ad filtiri
     if (nameVal) {
@@ -113,7 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attendance filtiri
     if (attendanceVal) {
-      filtered = filtered.filter(r => (r.attendance || '').toLowerCase() === attendanceVal);
+      filtered = filtered.filter(r => {
+        const att = (r.attendance || '');
+        if (attendanceVal === 'Yes') return att === 'Yes' || att === 'Maybe';
+        if (attendanceVal === 'Maybe') return att === 'Maybe';
+        if (attendanceVal === 'No') return att === 'No';
+        return true;
+      });
     }
 
     renderTable(filtered);
