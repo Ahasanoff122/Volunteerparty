@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let rsvpList = [];
 
-  // 🔹 Məlumatı gətir
+  // 🔹 RSVP-ləri serverdən gətir
   async function fetchRSVP() {
     try {
       const res = await fetch('/api/rsvp');
@@ -35,12 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${formatAttendance(item.attendance)}</td>
         <td>${item.note || '-'}</td>
         <td>${new Date(item.createdAt).toLocaleString()}</td>
-        <td><button class="deleteBtn" data-id="${item._id}">Sil</button></td>
+        <td>
+          <button class="deleteBtn" data-id="${item._id}">Sil</button>
+          ${item.attendance === 'Yes' ? `<button class="inviteBtn" data-email="${item.email}">📧 Dəvət göndər</button>` : ''}
+        </td>
       `;
       tableBody.appendChild(tr);
     });
 
-    // 🔹 Sil düymələri üçün hadisə
+    // 🔹 Sil düyməsi
     document.querySelectorAll('.deleteBtn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.getAttribute('data-id');
@@ -49,9 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
+
+    // 🔹 Dəvət göndər düyməsi
+    document.querySelectorAll('.inviteBtn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const email = e.target.getAttribute('data-email');
+        if (!confirm(`Dəvəti ${email} ünvanına göndərmək istəyirsiniz?`)) return;
+        try {
+          const res = await fetch('/api/send-single-invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          alert(data.message || 'Dəvət göndərildi!');
+        } catch (err) {
+          console.error(err);
+          alert('Dəvət göndərilərkən xəta baş verdi.');
+        }
+      });
+    });
   }
 
-  // 🔹 Attendance sahəsini tərcümə et
+  // 🔹 Attendance tərcüməsi
   function formatAttendance(value) {
     if (!value) return '-';
     const val = value.toLowerCase();
@@ -90,12 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attendance filtiri
     if (attendanceVal) {
-      filtered = filtered.filter(r => {
-        const att = (r.attendance || '').toLowerCase();
-        if (attendanceVal === 'yes') return att === 'yes' || att === 'maybe';
-        if (attendanceVal === 'no') return att === 'no';
-        return true;
-      });
+      filtered = filtered.filter(r => (r.attendance || '').toLowerCase() === attendanceVal);
     }
 
     renderTable(filtered);
@@ -105,5 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
   filterName.addEventListener('input', applyFilters);
   filterAttendance.addEventListener('change', applyFilters);
 
+  // 🔹 Başlanğıcda məlumatı gətir
   fetchRSVP();
 });
