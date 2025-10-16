@@ -4,53 +4,142 @@
   <meta charset="UTF-8">
   <title>Admin Panel</title>
   <link rel="stylesheet" href="/admin.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #2c3e50;
+      color: #fff;
+    }
+    tr:hover {
+      background: #ecf0f1;
+    }
+    button {
+      cursor: pointer;
+    }
+    .invite-btn {
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .invite-btn:hover {
+      background: #219150;
+    }
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+    #logout {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      text-decoration: none;
+      background: #e67e22;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
   <h1>RSVP Siyahısı</h1>
 
-  <label>Ad filtri: <input type="text" id="filterName"></label>
-  <label>Gələcək / Gəlməyəcək: 
-    <select id="filterAttendance">
-      <option value="">Hamısı</option>
-      <option value="Yes">Gələcək</option>
-      <option value="No">Gəlməyəcək</option>
-    </select>
-  </label>
-  <button id="applyFilter">Filtrlə</button>
+<label>Ad filtri: <input type="text" id="filterName" placeholder="Ad üzrə axtar..."></label>
+<label>İştirak statusu:
+  <select id="filterAttendance">
+    <option value="">Hamısı</option>
+    <option value="Yes">Gələcək</option>
+    <option value="No">Gəlməyəcək</option>
+    <option value="Maybe">Bəlkə</option>
+  </select>
+</label>
+<button id="applyFilter">Filtrlə</button>
 
-  <table border="1" id="rsvpTable">
+
+  <table id="rsvpTable">
     <thead>
       <tr>
         <th>Ad</th>
         <th>Email</th>
         <th>Telefon</th>
-        <th>İştirak statusu</th>
+        <th>Status</th>
         <th>Qeyd</th>
         <th>Tarix</th>
+        <th>Əməliyyatlar</th>
       </tr>
     </thead>
     <tbody>
-       <!-- <% if (rsvps.length === 0) { %>
-    <tr>
-      <td colspan="6">Heç bir qeyd yoxdur.</td>
-    </tr>
-  <% } else { %>
-    <% rsvps.forEach(rsvp => { %>
-      <tr>
-        <td><%= rsvp.name %></td>
-        <td><%= rsvp.email %></td>
-        <td><%= rsvp.phone || '-' %></td>
-        <td><%= rsvp.attendance %></td>
-        <td><%= rsvp.note || '-' %></td>
-        <td><%= new Date(rsvp.createdAt).toLocaleString() %></td>
-      </tr>
-    <% }) %>
-  <% } %> -->
+      <% if (rsvps.length === 0) { %>
+        <tr><td colspan="7">Heç bir qeyd yoxdur.</td></tr>
+      <% } else { %>
+        <% rsvps.forEach(rsvp => { %>
+          <tr>
+            <td><%= rsvp.name %></td>
+            <td><%= rsvp.email %></td>
+            <td><%= rsvp.phone || '-' %></td>
+            <td><%= rsvp.attendance %></td>
+            <td><%= rsvp.note || '-' %></td>
+            <td><%= new Date(rsvp.createdAt).toLocaleString() %></td>
+            <td>
+              <button class="invite-btn" onclick="sendInvite('<%= rsvp._id %>', '<%= rsvp.email %>', '<%= rsvp.name %>')">📨 Dəvət göndər</button>
+              <button class="delete-btn" onclick="deleteRsvp('<%= rsvp._id %>')">🗑 Sil</button>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
     </tbody>
   </table>
 
-  <script src="/admin.js" defer></script>
- <a href="login" style="position:absolute; top:20px; right:20px;">Çıxış</a>
+  <a href="/logout" id="logout">Çıxış</a>
 
+  <script>
+    // Tək bir şəxsə dəvət göndər
+    async function sendInvite(id, email, name) {
+      if (!confirm(`${name} (${email}) üçün dəvət göndərilsin?`)) return;
+
+      const res = await fetch(`/api/send-invite/${id}`, { method: "POST" });
+      const data = await res.json();
+      alert(data.message || "Email göndərildi!");
+    }
+
+    // RSVP sil
+    async function deleteRsvp(id) {
+      if (!confirm("Bu qeyd silinsin?")) return;
+      const res = await fetch(`/api/rsvp/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      alert(data.message);
+      location.reload();
+    }
+  </script>
 </body>
 </html>
