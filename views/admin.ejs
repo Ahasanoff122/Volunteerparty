@@ -103,6 +103,7 @@
   <table id="rsvpTable">
     <thead>
       <tr>
+        <th>№</th>
         <th>Ad</th>
         <th>Email</th>
         <th>Telefon</th>
@@ -133,38 +134,68 @@
         try {
           const res = await fetch('/api/rsvp');
           rsvpList = await res.json();
-          renderTable(rsvpList);
+          applyFilters();
         } catch(err) {
           console.error(err);
-          tableBody.innerHTML = '<tr><td colspan="7">Məlumatları gətirmək mümkün olmadı.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="8">Məlumatları gətirmək mümkün olmadı.</td></tr>';
         }
       }
 
       // Cədvəli göstər
-      function renderTable(list) {
-        tableBody.innerHTML = '';
-        if (list.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="7">Heç bir qeyd yoxdur.</td></tr>';
-          return;
-        }
+function renderTable(list) {
+  tableBody.innerHTML = '';
 
-        list.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${item.name || '-'}</td>
-            <td>${item.email || '-'}</td>
-            <td>${item.phone || '-'}</td>
-            <td>${formatAttendance(item.attendance)}</td>
-            <td>${item.note || '-'}</td>
-            <td>${new Date(item.createdAt).toLocaleString()}</td>
-            <td>
-              <button class="invite-btn" onclick="sendInvite('${item._id}', '${item.email}', '${item.name}')">📨 Dəvət göndər</button>
-              <button class="delete-btn" onclick="deleteRsvp('${item._id}')">🗑 Sil</button>
-            </td>
-          `;
-          tableBody.appendChild(tr);
-        });
-      }
+  if (list.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="8">Heç bir qeyd yoxdur.</td></tr>';
+    return;
+  }
+
+  // RSVP-ləri köhnədən yeniyə sort edirik
+  const sortedList = [...list].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  // RSVP-ləri əlavə edirik: köhnə ən altda, yeni yuxarıya
+  for (let i = sortedList.length - 1; i >= 0; i--) {
+    const item = sortedList[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 2}</td> <!-- 1 sizin statik sətir üçün saxlanıb -->
+      <td>${item.name || '-'}</td>
+      <td>${item.email || '-'}</td>
+      <td>${item.phone || '-'}</td>
+      <td>${formatAttendance(item.attendance)}</td>
+      <td>${item.note || '-'}</td>
+      <td>${new Date(item.createdAt).toLocaleString()}</td>
+      <td>
+        <button class="invite-btn" onclick="sendInvite('${item._id}', '${item.email}', '${item.name}')">📨 Dəvət göndər</button>
+        <button class="delete-btn" onclick="deleteRsvp('${item._id}')">🗑 Sil</button>
+      </td>
+    `;
+    tableBody.appendChild(tr); // normal appendChild ilə yuxarıya əlavə olunur
+  }
+
+  // Statik sətir: sizin üçün 1, həmişə ən altda
+  const myRow = document.createElement('tr');
+  myRow.innerHTML = `
+    <td>1</td>
+    <td>Əli Həsənov</td>
+    <td>hesenovali2808@gmail.com</td>
+    <td>0775775017</td>
+    <td>Təşkilatçı</td>
+    <td>Bu özəl günə rəng qatmağa hazırıq</td>
+    <td>07.07.707</td>
+    <td>
+      <button class="invite-btn" onclick="sendInvite('${item._id}', '${item.email}', '${item.name}')">📨 Dəvət göndər</button>
+      Mən getsəm party dağılacaq</td>
+  `;
+  tableBody.appendChild(myRow); // ən altda əlavə olunur
+}
+
+
+
+
+
+
+
 
       // Attendance tərcüməsi
       function formatAttendance(value) {
@@ -200,23 +231,21 @@
       filterAttendance.addEventListener('change', applyFilters);
 
       // Tək bir istifadəçiyə dəvət göndər
-    window.sendInvite = async function(id, email, name) {
-  if (!confirm(`${name} (${email}) üçün dəvət göndərilsin?`)) return;
+      window.sendInvite = async function(id, email, name) {
+        if (!confirm(`${name} (${email}) üçün dəvət göndərilsin?`)) return;
 
-  try {
-    const res = await fetch(`/api/send-invite/${id}`, {  // DÜZELİŞ BURADA
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    const data = await res.json();
-    alert(data.message || 'Email göndərildi!');
-  } catch(err) {
-    console.error(err);
-    alert('Dəvət göndərilərkən xəta baş verdi.');
-  }
-}
-
-      
+        try {
+          const res = await fetch(`/api/send-invite/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await res.json();
+          alert(data.message || 'Email göndərildi!');
+        } catch(err) {
+          console.error(err);
+          alert('Dəvət göndərilərkən xəta baş verdi.');
+        }
+      }
 
       // RSVP sil
       window.deleteRsvp = async function(id) {
